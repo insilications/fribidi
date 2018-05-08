@@ -4,9 +4,9 @@
 #
 Name     : fribidi
 Version  : 0.19.7
-Release  : 6
-URL      : http://fribidi.org/download/fribidi-0.19.7.tar.bz2
-Source0  : http://fribidi.org/download/fribidi-0.19.7.tar.bz2
+Release  : 7
+URL      : https://github.com/fribidi/fribidi/releases/download/0.19.7/fribidi-0.19.7.tar.bz2
+Source0  : https://github.com/fribidi/fribidi/releases/download/0.19.7/fribidi-0.19.7.tar.bz2
 Summary  : Unicode Bidirectional Algorithm Library
 Group    : Development/Tools
 License  : LGPL-2.1
@@ -90,7 +90,7 @@ export http_proxy=http://127.0.0.1:9/
 export https_proxy=http://127.0.0.1:9/
 export no_proxy=localhost,127.0.0.1,0.0.0.0
 export LANG=C
-export SOURCE_DATE_EPOCH=1522108730
+export SOURCE_DATE_EPOCH=1525821692
 %configure --disable-static
 make  %{?_smp_mflags}
 
@@ -110,7 +110,7 @@ export no_proxy=localhost,127.0.0.1,0.0.0.0
 make VERBOSE=1 V=1 %{?_smp_mflags} check
 
 %install
-export SOURCE_DATE_EPOCH=1522108730
+export SOURCE_DATE_EPOCH=1525821692
 rm -rf %{buildroot}
 pushd ../build32/
 %make_install32
