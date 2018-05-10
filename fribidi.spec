@@ -4,7 +4,7 @@
 #
 Name     : fribidi
 Version  : 0.19.7
-Release  : 7
+Release  : 8
 URL      : https://github.com/fribidi/fribidi/releases/download/0.19.7/fribidi-0.19.7.tar.bz2
 Source0  : https://github.com/fribidi/fribidi/releases/download/0.19.7/fribidi-0.19.7.tar.bz2
 Summary  : Unicode Bidirectional Algorithm Library
