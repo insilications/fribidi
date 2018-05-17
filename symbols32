@@ -10,12 +10,15 @@ libfribidi.so.0:fribidi_debug_status
 libfribidi.so.0:fribidi_get_bidi_type
 libfribidi.so.0:fribidi_get_bidi_type_name
 libfribidi.so.0:fribidi_get_bidi_types
+libfribidi.so.0:fribidi_get_bracket
+libfribidi.so.0:fribidi_get_bracket_types
 libfribidi.so.0:fribidi_get_joining_type
 libfribidi.so.0:fribidi_get_joining_type_name
 libfribidi.so.0:fribidi_get_joining_types
 libfribidi.so.0:fribidi_get_mirror_char
 libfribidi.so.0:fribidi_get_par_direction
 libfribidi.so.0:fribidi_get_par_embedding_levels
+libfribidi.so.0:fribidi_get_par_embedding_levels_ex
 libfribidi.so.0:fribidi_get_type
 libfribidi.so.0:fribidi_get_type_internal
 libfribidi.so.0:fribidi_iso8859_6_to_unicode_c
