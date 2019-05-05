@@ -4,16 +4,15 @@
 #
 Name     : fribidi
 Version  : 1.0.5
-Release  : 11
+Release  : 12
 URL      : https://github.com/fribidi/fribidi/releases/download/v1.0.5/fribidi-1.0.5.tar.bz2
 Source0  : https://github.com/fribidi/fribidi/releases/download/v1.0.5/fribidi-1.0.5.tar.bz2
-Summary  : Unicode Bidirectional Algorithm Library
+Summary  : A Free Implementation of the Unicode Bidirectional Algorithm
 Group    : Development/Tools
 License  : LGPL-2.1
-Requires: fribidi-bin
-Requires: fribidi-lib
-Requires: fribidi-license
-Requires: fribidi-man
+Requires: fribidi-bin = %{version}-%{release}
+Requires: fribidi-lib = %{version}-%{release}
+Requires: fribidi-license = %{version}-%{release}
 BuildRequires : buildreq-meson
 BuildRequires : gcc-dev32
 BuildRequires : gcc-libgcc32
@@ -25,15 +24,21 @@ BuildRequires : glibc-libc32
 BuildRequires : pkg-config
 
 %description
-# GNU FriBidi
-The Free Implementation of the [Unicode Bidirectional Algorithm].
-## Background
+# Unicode Character Database
+# Date: 2018-06-04, 17:57:00 GMT [KW]
+# Â© 2018 UnicodeÂ®, Inc.
+# Unicode and the Unicode Logo are registered trademarks of Unicode, Inc. in the U.S. and other countries.
+# For terms of use, see http://www.unicode.org/terms_of_use.html
+# For documentation, see the following:
+# NamesList.html
+# UAX #38, "Unicode Han Database (Unihan)"
+# UAX #44, "Unicode Character Database."
+# The UAXes can be accessed at http://www.unicode.org/versions/Unicode11.0.0/
 
 %package bin
 Summary: bin components for the fribidi package.
 Group: Binaries
-Requires: fribidi-license
-Requires: fribidi-man
+Requires: fribidi-license = %{version}-%{release}
 
 %description bin
 bin components for the fribidi package.
@@ -42,9 +47,10 @@ bin components for the fribidi package.
 %package dev
 Summary: dev components for the fribidi package.
 Group: Development
-Requires: fribidi-lib
-Requires: fribidi-bin
-Provides: fribidi-devel
+Requires: fribidi-lib = %{version}-%{release}
+Requires: fribidi-bin = %{version}-%{release}
+Provides: fribidi-devel = %{version}-%{release}
+Requires: fribidi = %{version}-%{release}
 
 %description dev
 dev components for the fribidi package.
@@ -53,9 +59,9 @@ dev components for the fribidi package.
 %package dev32
 Summary: dev32 components for the fribidi package.
 Group: Default
-Requires: fribidi-lib32
-Requires: fribidi-bin
-Requires: fribidi-dev
+Requires: fribidi-lib32 = %{version}-%{release}
+Requires: fribidi-bin = %{version}-%{release}
+Requires: fribidi-dev = %{version}-%{release}
 
 %description dev32
 dev32 components for the fribidi package.
@@ -64,7 +70,7 @@ dev32 components for the fribidi package.
 %package lib
 Summary: lib components for the fribidi package.
 Group: Libraries
-Requires: fribidi-license
+Requires: fribidi-license = %{version}-%{release}
 
 %description lib
 lib components for the fribidi package.
@@ -73,7 +79,7 @@ lib components for the fribidi package.
 %package lib32
 Summary: lib32 components for the fribidi package.
 Group: Default
-Requires: fribidi-license
+Requires: fribidi-license = %{version}-%{release}
 
 %description lib32
 lib32 components for the fribidi package.
@@ -87,14 +93,6 @@ Group: Default
 license components for the fribidi package.
 
 
-%package man
-Summary: man components for the fribidi package.
-Group: Default
-
-%description man
-man components for the fribidi package.
-
-
 %prep
 %setup -q -n fribidi-1.0.5
 pushd ..
@@ -106,15 +104,23 @@ export http_proxy=http://127.0.0.1:9/
 export https_proxy=http://127.0.0.1:9/
 export no_proxy=localhost,127.0.0.1,0.0.0.0
 export LANG=C
-export SOURCE_DATE_EPOCH=1532438986
+export SOURCE_DATE_EPOCH=1557076775
+export AR=gcc-ar
+export RANLIB=gcc-ranlib
+export NM=gcc-nm
+export CFLAGS="$CFLAGS -O3 -ffat-lto-objects -flto=4 "
+export FCFLAGS="$CFLAGS -O3 -ffat-lto-objects -flto=4 "
+export FFLAGS="$CFLAGS -O3 -ffat-lto-objects -flto=4 "
+export CXXFLAGS="$CXXFLAGS -O3 -ffat-lto-objects -flto=4 "
 %configure --disable-static
 make  %{?_smp_mflags}
 
 pushd ../build32/
 export PKG_CONFIG_PATH="/usr/lib32/pkgconfig"
-export CFLAGS="$CFLAGS -m32"
-export CXXFLAGS="$CXXFLAGS -m32"
-export LDFLAGS="$LDFLAGS -m32"
+export ASFLAGS="${ASFLAGS}${ASFLAGS:+ }--32"
+export CFLAGS="${CFLAGS}${CFLAGS:+ }-m32"
+export CXXFLAGS="${CXXFLAGS}${CXXFLAGS:+ }-m32"
+export LDFLAGS="${LDFLAGS}${LDFLAGS:+ }-m32"
 %configure --disable-static    --libdir=/usr/lib32 --build=i686-generic-linux-gnu --host=i686-generic-linux-gnu --target=i686-clr-linux-gnu
 make  %{?_smp_mflags}
 popd
@@ -124,12 +130,14 @@ export http_proxy=http://127.0.0.1:9/
 export https_proxy=http://127.0.0.1:9/
 export no_proxy=localhost,127.0.0.1,0.0.0.0
 make VERBOSE=1 V=1 %{?_smp_mflags} check
+cd ../build32;
+make VERBOSE=1 V=1 %{?_smp_mflags} check || :
 
 %install
-export SOURCE_DATE_EPOCH=1532438986
+export SOURCE_DATE_EPOCH=1557076775
 rm -rf %{buildroot}
-mkdir -p %{buildroot}/usr/share/doc/fribidi
-cp COPYING %{buildroot}/usr/share/doc/fribidi/COPYING
+mkdir -p %{buildroot}/usr/share/package-licenses/fribidi
+cp COPYING %{buildroot}/usr/share/package-licenses/fribidi/COPYING
 pushd ../build32/
 %make_install32
 if [ -d  %{buildroot}/usr/lib32/pkgconfig ]
@@ -174,29 +182,6 @@ popd
 /usr/include/fribidi/fribidi.h
 /usr/lib64/libfribidi.so
 /usr/lib64/pkgconfig/fribidi.pc
-
-%files dev32
-%defattr(-,root,root,-)
-/usr/lib32/libfribidi.so
-/usr/lib32/pkgconfig/32fribidi.pc
-/usr/lib32/pkgconfig/fribidi.pc
-
-%files lib
-%defattr(-,root,root,-)
-/usr/lib64/libfribidi.so.0
-/usr/lib64/libfribidi.so.0.4.0
-
-%files lib32
-%defattr(-,root,root,-)
-/usr/lib32/libfribidi.so.0
-/usr/lib32/libfribidi.so.0.4.0
-
-%files license
-%defattr(-,root,root,-)
-/usr/share/doc/fribidi/COPYING
-
-%files man
-%defattr(-,root,root,-)
 /usr/share/man/man3/fribidi_charset_to_unicode.3
 /usr/share/man/man3/fribidi_debug_status.3
 /usr/share/man/man3/fribidi_get_bidi_type.3
@@ -228,3 +213,23 @@ popd
 /usr/share/man/man3/fribidi_shape_arabic.3
 /usr/share/man/man3/fribidi_shape_mirroring.3
 /usr/share/man/man3/fribidi_unicode_to_charset.3
+
+%files dev32
+%defattr(-,root,root,-)
+/usr/lib32/libfribidi.so
+/usr/lib32/pkgconfig/32fribidi.pc
+/usr/lib32/pkgconfig/fribidi.pc
+
+%files lib
+%defattr(-,root,root,-)
+/usr/lib64/libfribidi.so.0
+/usr/lib64/libfribidi.so.0.4.0
+
+%files lib32
+%defattr(-,root,root,-)
+/usr/lib32/libfribidi.so.0
+/usr/lib32/libfribidi.so.0.4.0
+
+%files license
+%defattr(0644,root,root,0755)
+/usr/share/package-licenses/fribidi/COPYING
