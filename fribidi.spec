@@ -4,10 +4,10 @@
 #
 Name     : fribidi
 Version  : 1.0.5
-Release  : 12
+Release  : 13
 URL      : https://github.com/fribidi/fribidi/releases/download/v1.0.5/fribidi-1.0.5.tar.bz2
 Source0  : https://github.com/fribidi/fribidi/releases/download/v1.0.5/fribidi-1.0.5.tar.bz2
-Summary  : A Free Implementation of the Unicode Bidirectional Algorithm
+Summary  : Unicode Bidirectional Algorithm Library
 Group    : Development/Tools
 License  : LGPL-2.1
 Requires: fribidi-bin = %{version}-%{release}
@@ -24,16 +24,9 @@ BuildRequires : glibc-libc32
 BuildRequires : pkg-config
 
 %description
-# Unicode Character Database
-# Date: 2018-06-04, 17:57:00 GMT [KW]
-# Â© 2018 UnicodeÂ®, Inc.
-# Unicode and the Unicode Logo are registered trademarks of Unicode, Inc. in the U.S. and other countries.
-# For terms of use, see http://www.unicode.org/terms_of_use.html
-# For documentation, see the following:
-# NamesList.html
-# UAX #38, "Unicode Han Database (Unihan)"
-# UAX #44, "Unicode Character Database."
-# The UAXes can be accessed at http://www.unicode.org/versions/Unicode11.0.0/
+# GNU FriBidi
+The Free Implementation of the [Unicode Bidirectional Algorithm].
+## Background
 
 %package bin
 Summary: bin components for the fribidi package.
@@ -103,8 +96,9 @@ popd
 export http_proxy=http://127.0.0.1:9/
 export https_proxy=http://127.0.0.1:9/
 export no_proxy=localhost,127.0.0.1,0.0.0.0
-export LANG=C
-export SOURCE_DATE_EPOCH=1557076775
+export LANG=C.UTF-8
+export SOURCE_DATE_EPOCH=1568831524
+export GCC_IGNORE_WERROR=1
 export AR=gcc-ar
 export RANLIB=gcc-ranlib
 export NM=gcc-nm
@@ -118,14 +112,14 @@ make  %{?_smp_mflags}
 pushd ../build32/
 export PKG_CONFIG_PATH="/usr/lib32/pkgconfig"
 export ASFLAGS="${ASFLAGS}${ASFLAGS:+ }--32"
-export CFLAGS="${CFLAGS}${CFLAGS:+ }-m32"
-export CXXFLAGS="${CXXFLAGS}${CXXFLAGS:+ }-m32"
-export LDFLAGS="${LDFLAGS}${LDFLAGS:+ }-m32"
+export CFLAGS="${CFLAGS}${CFLAGS:+ }-m32 -mstackrealign"
+export CXXFLAGS="${CXXFLAGS}${CXXFLAGS:+ }-m32 -mstackrealign"
+export LDFLAGS="${LDFLAGS}${LDFLAGS:+ }-m32 -mstackrealign"
 %configure --disable-static    --libdir=/usr/lib32 --build=i686-generic-linux-gnu --host=i686-generic-linux-gnu --target=i686-clr-linux-gnu
 make  %{?_smp_mflags}
 popd
 %check
-export LANG=C
+export LANG=C.UTF-8
 export http_proxy=http://127.0.0.1:9/
 export https_proxy=http://127.0.0.1:9/
 export no_proxy=localhost,127.0.0.1,0.0.0.0
@@ -134,7 +128,7 @@ cd ../build32;
 make VERBOSE=1 V=1 %{?_smp_mflags} check || :
 
 %install
-export SOURCE_DATE_EPOCH=1557076775
+export SOURCE_DATE_EPOCH=1568831524
 rm -rf %{buildroot}
 mkdir -p %{buildroot}/usr/share/package-licenses/fribidi
 cp COPYING %{buildroot}/usr/share/package-licenses/fribidi/COPYING
