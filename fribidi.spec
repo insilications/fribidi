@@ -4,10 +4,10 @@
 #
 Name     : fribidi
 Version  : 1.0.7
-Release  : 14
+Release  : 15
 URL      : https://github.com/fribidi/fribidi/releases/download/v1.0.7/fribidi-1.0.7.tar.bz2
 Source0  : https://github.com/fribidi/fribidi/releases/download/v1.0.7/fribidi-1.0.7.tar.bz2
-Summary  : A Free Implementation of the Unicode Bidirectional Algorithm
+Summary  : Unicode Bidirectional Algorithm Library
 Group    : Development/Tools
 License  : LGPL-2.1
 Requires: fribidi-bin = %{version}-%{release}
@@ -22,18 +22,10 @@ BuildRequires : glib-dev32
 BuildRequires : glibc-dev32
 BuildRequires : glibc-libc32
 BuildRequires : pkg-config
+Patch1: CVE-2019-18397.patch
 
 %description
-# Unicode Character Database
-# Date: 2018-06-04, 17:57:00 GMT [KW]
-# © 2018 Unicode®, Inc.
-# Unicode and the Unicode Logo are registered trademarks of Unicode, Inc. in the U.S. and other countries.
-# For terms of use, see http://www.unicode.org/terms_of_use.html
-# For documentation, see the following:
-# NamesList.html
-# UAX #38, "Unicode Han Database (Unihan)"
-# UAX #44, "Unicode Character Database."
-# The UAXes can be accessed at http://www.unicode.org/versions/Unicode11.0.0/
+
 
 %package bin
 Summary: bin components for the fribidi package.
@@ -50,7 +42,6 @@ Group: Development
 Requires: fribidi-lib = %{version}-%{release}
 Requires: fribidi-bin = %{version}-%{release}
 Provides: fribidi-devel = %{version}-%{release}
-Requires: fribidi = %{version}-%{release}
 Requires: fribidi = %{version}-%{release}
 
 %description dev
@@ -96,6 +87,8 @@ license components for the fribidi package.
 
 %prep
 %setup -q -n fribidi-1.0.7
+cd %{_builddir}/fribidi-1.0.7
+%patch1 -p1
 pushd ..
 cp -a fribidi-1.0.7 build32
 popd
@@ -105,16 +98,15 @@ export http_proxy=http://127.0.0.1:9/
 export https_proxy=http://127.0.0.1:9/
 export no_proxy=localhost,127.0.0.1,0.0.0.0
 export LANG=C.UTF-8
-export SOURCE_DATE_EPOCH=1570114194
-# -Werror is for werrorists
+export SOURCE_DATE_EPOCH=1573693467
 export GCC_IGNORE_WERROR=1
 export AR=gcc-ar
 export RANLIB=gcc-ranlib
 export NM=gcc-nm
-export CFLAGS="$CFLAGS -O3 -ffat-lto-objects -flto=4 "
-export FCFLAGS="$CFLAGS -O3 -ffat-lto-objects -flto=4 "
-export FFLAGS="$CFLAGS -O3 -ffat-lto-objects -flto=4 "
-export CXXFLAGS="$CXXFLAGS -O3 -ffat-lto-objects -flto=4 "
+export CFLAGS="$CFLAGS -O3 -ffat-lto-objects -flto=4 -fstack-protector-strong -mzero-caller-saved-regs=used "
+export FCFLAGS="$CFLAGS -O3 -ffat-lto-objects -flto=4 -fstack-protector-strong -mzero-caller-saved-regs=used "
+export FFLAGS="$CFLAGS -O3 -ffat-lto-objects -flto=4 -fstack-protector-strong -mzero-caller-saved-regs=used "
+export CXXFLAGS="$CXXFLAGS -O3 -ffat-lto-objects -flto=4 -fstack-protector-strong -mzero-caller-saved-regs=used "
 %configure --disable-static
 make  %{?_smp_mflags}
 
@@ -137,10 +129,10 @@ cd ../build32;
 make VERBOSE=1 V=1 %{?_smp_mflags} check || :
 
 %install
-export SOURCE_DATE_EPOCH=1570114194
+export SOURCE_DATE_EPOCH=1573693467
 rm -rf %{buildroot}
 mkdir -p %{buildroot}/usr/share/package-licenses/fribidi
-cp COPYING %{buildroot}/usr/share/package-licenses/fribidi/COPYING
+cp %{_builddir}/fribidi-1.0.7/COPYING %{buildroot}/usr/share/package-licenses/fribidi/597bf5f9c0904bd6c48ac3a3527685818d11246d
 pushd ../build32/
 %make_install32
 if [ -d  %{buildroot}/usr/lib32/pkgconfig ]
@@ -235,4 +227,4 @@ popd
 
 %files license
 %defattr(0644,root,root,0755)
-/usr/share/package-licenses/fribidi/COPYING
+/usr/share/package-licenses/fribidi/597bf5f9c0904bd6c48ac3a3527685818d11246d
