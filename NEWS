@@ -1,3 +1,25 @@
+Overview of changes between 1.0.9 and 1.0.10
+=============================================
+
+* Fixed various compilation problems and symbol exports necessary for proper compilation under windows.
+
+Overview of changes between 1.0.8 and 1.0.9
+=============================================
+
+* A bug fix in the fribidi unicode algorithm where isolate sequences were not really isolated.
+
+* Restored mistakenly removed deprecated function fribidi_log2vis_get_embedding_levels()
+
+* autotools now generates xz archives instead of bzip2 archives
+
+Overview of changes between 1.0.7 and 1.0.8
+=============================================
+
+* A bug fix in the fribidi unicode algorithm for multiple isolate sequences.
+
+* Fixed a potential buffer overflow for a long sequence of isolate overrides characters
+
+
 Overview of changes between 1.0.6 and 1.0.7
 =============================================
 
