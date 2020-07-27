@@ -1,4 +1,10 @@
 # This file contains additional build requirements that did not get
 # picked up automatically. One name per line, no whitespace.
 glib-dev
-glib-dev32
+findutils
+glib-dev
+gcc-dev
+glibc-dev
+pkg-config
+binutils
+binutils-dev
