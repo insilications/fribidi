@@ -5,7 +5,7 @@
 %define keepstatic 1
 Name     : fribidi
 Version  : 1.0.10
-Release  : 17
+Release  : 18
 URL      : https://github.com/fribidi/fribidi/releases/download/v1.0.10/fribidi-1.0.10.tar.xz
 Source0  : https://github.com/fribidi/fribidi/releases/download/v1.0.10/fribidi-1.0.10.tar.xz
 Summary  : Unicode Bidirectional Algorithm Library
@@ -18,8 +18,14 @@ BuildRequires : binutils-dev
 BuildRequires : buildreq-meson
 BuildRequires : findutils
 BuildRequires : gcc-dev
+BuildRequires : gcc-dev32
+BuildRequires : gcc-libgcc32
+BuildRequires : gcc-libstdc++32
 BuildRequires : glib-dev
+BuildRequires : glib-dev32
 BuildRequires : glibc-dev
+BuildRequires : glibc-dev32
+BuildRequires : glibc-libc32
 BuildRequires : pkg-config
 # Suppress stripping binaries
 %define __strip /bin/true
@@ -48,12 +54,31 @@ Requires: fribidi = %{version}-%{release}
 dev components for the fribidi package.
 
 
+%package dev32
+Summary: dev32 components for the fribidi package.
+Group: Default
+Requires: fribidi-lib32 = %{version}-%{release}
+Requires: fribidi-bin = %{version}-%{release}
+Requires: fribidi-dev = %{version}-%{release}
+
+%description dev32
+dev32 components for the fribidi package.
+
+
 %package lib
 Summary: lib components for the fribidi package.
 Group: Libraries
 
 %description lib
 lib components for the fribidi package.
+
+
+%package lib32
+Summary: lib32 components for the fribidi package.
+Group: Default
+
+%description lib32
+lib32 components for the fribidi package.
 
 
 %package staticdev
@@ -65,9 +90,21 @@ Requires: fribidi-dev = %{version}-%{release}
 staticdev components for the fribidi package.
 
 
+%package staticdev32
+Summary: staticdev32 components for the fribidi package.
+Group: Default
+Requires: fribidi-dev = %{version}-%{release}
+
+%description staticdev32
+staticdev32 components for the fribidi package.
+
+
 %prep
 %setup -q -n fribidi-1.0.10
 cd %{_builddir}/fribidi-1.0.10
+pushd ..
+cp -a fribidi-1.0.10 build32
+popd
 
 %build
 ## build_prepend content
@@ -79,7 +116,7 @@ unset http_proxy
 unset https_proxy
 unset no_proxy
 export LANG=C.UTF-8
-export SOURCE_DATE_EPOCH=1595849963
+export SOURCE_DATE_EPOCH=1596176265
 export GCC_IGNORE_WERROR=1
 export AR=gcc-ar
 export RANLIB=gcc-ranlib
@@ -124,16 +161,42 @@ export LDFLAGS="${LDFLAGS_USE}"
 %autogen  --enable-shared --enable-static
 make  %{?_smp_mflags}  V=1 VERBOSE=1
 
+pushd ../build32/
+## build_prepend content
+#find . -type f -name 'git.mk' -exec rm {} \;
+#find . -type f -name 'configure.ac' -exec sed -i '/doc\/Makefile/d' {} \;
+#find . -type d -name 'doc' -exec rm -rf {} 2> /dev/null \;
+## build_prepend end
+export PKG_CONFIG_PATH="/usr/lib32/pkgconfig"
+export ASFLAGS="${ASFLAGS}${ASFLAGS:+ }--32"
+export CFLAGS="${CFLAGS}${CFLAGS:+ }-m32 -mstackrealign"
+export CXXFLAGS="${CXXFLAGS}${CXXFLAGS:+ }-m32 -mstackrealign"
+export LDFLAGS="${LDFLAGS}${LDFLAGS:+ }-m32 -mstackrealign"
+%autogen  --enable-shared --enable-static  --libdir=/usr/lib32 --build=i686-generic-linux-gnu --host=i686-generic-linux-gnu --target=i686-clr-linux-gnu
+make  %{?_smp_mflags}  V=1 VERBOSE=1
+popd
+
 %check
 export LANG=C.UTF-8
 unset http_proxy
 unset https_proxy
 unset no_proxy
+make VERBOSE=1 V=1 %{?_smp_mflags} check
+cd ../build32;
 make VERBOSE=1 V=1 %{?_smp_mflags} check || :
 
 %install
-export SOURCE_DATE_EPOCH=1595849963
+export SOURCE_DATE_EPOCH=1596176265
 rm -rf %{buildroot}
+pushd ../build32/
+%make_install32
+if [ -d  %{buildroot}/usr/lib32/pkgconfig ]
+then
+pushd %{buildroot}/usr/lib32/pkgconfig
+for i in *.pc ; do ln -s $i 32$i ; done
+popd
+fi
+popd
 %make_install
 
 %files
@@ -201,11 +264,26 @@ rm -rf %{buildroot}
 /usr/share/man/man3/fribidi_shape_mirroring.3
 /usr/share/man/man3/fribidi_unicode_to_charset.3
 
+%files dev32
+%defattr(-,root,root,-)
+/usr/lib32/libfribidi.so
+/usr/lib32/pkgconfig/32fribidi.pc
+/usr/lib32/pkgconfig/fribidi.pc
+
 %files lib
 %defattr(-,root,root,-)
 /usr/lib64/libfribidi.so.0
 /usr/lib64/libfribidi.so.0.4.0
 
+%files lib32
+%defattr(-,root,root,-)
+/usr/lib32/libfribidi.so.0
+/usr/lib32/libfribidi.so.0.4.0
+
 %files staticdev
 %defattr(-,root,root,-)
 /usr/lib64/libfribidi.a
+
+%files staticdev32
+%defattr(-,root,root,-)
+/usr/lib32/libfribidi.a

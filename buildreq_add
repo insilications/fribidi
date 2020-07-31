@@ -1,10 +1,16 @@
 # This file contains additional build requirements that did not get
 # picked up automatically. One name per line, no whitespace.
-glib-dev
-findutils
-glib-dev
-gcc-dev
-glibc-dev
-pkg-config
 binutils
 binutils-dev
+buildreq-meson
+findutils
+gcc-dev
+gcc-dev32
+gcc-libgcc32
+gcc-libstdc++32
+glibc-dev
+glibc-dev32
+glibc-libc32
+glib-dev
+glib-dev32
+pkg-config
