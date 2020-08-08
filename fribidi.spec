@@ -5,7 +5,7 @@
 %define keepstatic 1
 Name     : fribidi
 Version  : 1.0.10
-Release  : 18
+Release  : 19
 URL      : https://github.com/fribidi/fribidi/releases/download/v1.0.10/fribidi-1.0.10.tar.xz
 Source0  : https://github.com/fribidi/fribidi/releases/download/v1.0.10/fribidi-1.0.10.tar.xz
 Summary  : Unicode Bidirectional Algorithm Library
@@ -116,7 +116,7 @@ unset http_proxy
 unset https_proxy
 unset no_proxy
 export LANG=C.UTF-8
-export SOURCE_DATE_EPOCH=1596176265
+export SOURCE_DATE_EPOCH=1596919411
 export GCC_IGNORE_WERROR=1
 export AR=gcc-ar
 export RANLIB=gcc-ranlib
@@ -148,7 +148,7 @@ export CXXFLAGS="${CXXFLAGS_GENERATE}"
 export FFLAGS="${FFLAGS_GENERATE}"
 export FCFLAGS="${FCFLAGS_GENERATE}"
 export LDFLAGS="${LDFLAGS_GENERATE}"
-%autogen  --enable-shared --enable-static
+%autogen --enable-shared --enable-static
 make  %{?_smp_mflags}  V=1 VERBOSE=1
 
 make VERBOSE=1 V=1 %{?_smp_mflags} check || :
@@ -167,6 +167,12 @@ pushd ../build32/
 #find . -type f -name 'configure.ac' -exec sed -i '/doc\/Makefile/d' {} \;
 #find . -type d -name 'doc' -exec rm -rf {} 2> /dev/null \;
 ## build_prepend end
+export CFLAGS="-g -O3 -fuse-linker-plugin -pipe"
+export CXXFLAGS="-g -O3 -fuse-linker-plugin -fvisibility-inlines-hidden -pipe"
+export LDFLAGS="-g -O3 -fuse-linker-plugin -pipe"
+export AR=gcc-ar
+export RANLIB=gcc-ranlib
+export NM=gcc-nm
 export PKG_CONFIG_PATH="/usr/lib32/pkgconfig"
 export ASFLAGS="${ASFLAGS}${ASFLAGS:+ }--32"
 export CFLAGS="${CFLAGS}${CFLAGS:+ }-m32 -mstackrealign"
@@ -181,12 +187,12 @@ export LANG=C.UTF-8
 unset http_proxy
 unset https_proxy
 unset no_proxy
-make VERBOSE=1 V=1 %{?_smp_mflags} check
+make %{?_smp_mflags} check
 cd ../build32;
-make VERBOSE=1 V=1 %{?_smp_mflags} check || :
+make %{?_smp_mflags} check || :
 
 %install
-export SOURCE_DATE_EPOCH=1596176265
+export SOURCE_DATE_EPOCH=1596919411
 rm -rf %{buildroot}
 pushd ../build32/
 %make_install32
