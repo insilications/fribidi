@@ -5,9 +5,9 @@
 %define keepstatic 1
 Name     : fribidi
 Version  : 1.0.10
-Release  : 20
-URL      : https://github.com/fribidi/fribidi/releases/download/v1.0.10/fribidi-1.0.10.tar.xz
-Source0  : https://github.com/fribidi/fribidi/releases/download/v1.0.10/fribidi-1.0.10.tar.xz
+Release  : 21
+URL      : file:///insilications/build/clearlinux/packages/fribidi/fribidi-v1.0.10.zip
+Source0  : file:///insilications/build/clearlinux/packages/fribidi/fribidi-v1.0.10.zip
 Summary  : Unicode Bidirectional Algorithm Library
 Group    : Development/Tools
 License  : LGPL-2.1
@@ -100,10 +100,10 @@ staticdev32 components for the fribidi package.
 
 
 %prep
-%setup -q -n fribidi-1.0.10
-cd %{_builddir}/fribidi-1.0.10
+%setup -q -n fribidi-v1.0.10
+cd %{_builddir}/fribidi-v1.0.10
 pushd ..
-cp -a fribidi-1.0.10 build32
+cp -a fribidi-v1.0.10 build32
 popd
 
 %build
@@ -116,7 +116,7 @@ unset http_proxy
 unset https_proxy
 unset no_proxy
 export LANG=C.UTF-8
-export SOURCE_DATE_EPOCH=1596931205
+export SOURCE_DATE_EPOCH=1596933636
 export GCC_IGNORE_WERROR=1
 export AR=gcc-ar
 export RANLIB=gcc-ranlib
@@ -148,18 +148,18 @@ export CXXFLAGS="${CXXFLAGS_GENERATE}"
 export FFLAGS="${FFLAGS_GENERATE}"
 export FCFLAGS="${FCFLAGS_GENERATE}"
 export LDFLAGS="${LDFLAGS_GENERATE}"
-%autogen --enable-shared --enable-static
-make  %{?_smp_mflags}  V=1 VERBOSE=1
+%autogen --enable-shared --enable-static --disable-docs
+make  V=1 VERBOSE=1
 
-make VERBOSE=1 V=1 check || :
+make -j16 VERBOSE=1 V=1 check
 make clean
 export CFLAGS="${CFLAGS_USE}"
 export CXXFLAGS="${CXXFLAGS_USE}"
 export FFLAGS="${FFLAGS_USE}"
 export FCFLAGS="${FCFLAGS_USE}"
 export LDFLAGS="${LDFLAGS_USE}"
-%autogen  --enable-shared --enable-static
-make  %{?_smp_mflags}  V=1 VERBOSE=1
+%autogen  --enable-shared --enable-static --disable-docs
+make  V=1 VERBOSE=1
 
 pushd ../build32/
 ## build_prepend content
@@ -178,8 +178,8 @@ export ASFLAGS="${ASFLAGS}${ASFLAGS:+ }--32"
 export CFLAGS="${CFLAGS}${CFLAGS:+ }-m32 -mstackrealign"
 export CXXFLAGS="${CXXFLAGS}${CXXFLAGS:+ }-m32 -mstackrealign"
 export LDFLAGS="${LDFLAGS}${LDFLAGS:+ }-m32 -mstackrealign"
-%autogen  --enable-shared --enable-static  --libdir=/usr/lib32 --build=i686-generic-linux-gnu --host=i686-generic-linux-gnu --target=i686-clr-linux-gnu
-make  %{?_smp_mflags}  V=1 VERBOSE=1
+%autogen  --enable-shared --enable-static --disable-docs  --libdir=/usr/lib32 --build=i686-generic-linux-gnu --host=i686-generic-linux-gnu --target=i686-clr-linux-gnu
+make  V=1 VERBOSE=1
 popd
 
 %check
@@ -187,12 +187,12 @@ export LANG=C.UTF-8
 unset http_proxy
 unset https_proxy
 unset no_proxy
-make %{?_smp_mflags} check
+make check
 cd ../build32;
-make %{?_smp_mflags} check || :
+make check || :
 
 %install
-export SOURCE_DATE_EPOCH=1596931205
+export SOURCE_DATE_EPOCH=1596933636
 rm -rf %{buildroot}
 pushd ../build32/
 %make_install32
