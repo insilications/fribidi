@@ -1,3 +1,3 @@
 #find . -type f -name 'git.mk' -exec rm {} \;
-#find . -type f -name 'configure.ac' -exec sed -i '/doc\/Makefile/d' {} \;
-#find . -type d -name 'doc' -exec rm -rf {} 2> /dev/null \;
+find . -type f -name 'configure.ac' -exec sed -i '/doc\/Makefile/d' {} \;
+#find . -type d -name 'doc' -exec rm -rf {} \; || :
